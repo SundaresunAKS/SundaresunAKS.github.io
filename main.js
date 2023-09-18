@@ -1,18 +1,17 @@
 var url = "ws://localhost:9000";
 var ws = null;
 let connectionStatus = document.getElementById("connectionStatus");
-let messages = document.getElementById("messages");
 
 var onOpen = function() {
     console.log('onOpen Called: ' + url); 
     connectionStatus.innerHTML = "Connected"
-    messages.append("Connected");
+    messageBox("Connected");
 };
 
 var onClose = function() {
     console.log('onClose Called..');
     connectionStatus.innerHTML = "Closed"
-    messages.append("Closed");
+    messageBox("Closed");
     ws = null;
 };
 
@@ -26,7 +25,7 @@ var onError = function(event) {
     alert("WebSocket Error: "+event.data);
     ws = null;
     connectionStatus.innerHTML = "onError"
-    messages.append("onError");
+    messageBox("onError");
      
 }
 
@@ -36,14 +35,16 @@ function WebSocketSend(messgae){
         return;
     }
     ws.send(messgae);
-    messages.append("WebSocketSend: "+ messgae);
+    messageBox("WebSocketSend: "+ messgae);
 }
 
 function WebSocketConnect() {
     if ("WebSocket" in window) {
         if(ws === null){
+            url = document.getElementById("serverAddress").value;
+            url = "ws://"+url;
+            console.log("WebSocketConnect:: "+url);
             ws = new WebSocket(url);
-            // console.log("ws instanceof WebSocket: "+ ws instanceof WebSocket);
             ws.onopen = onOpen;
             ws.onclose = onClose;
             ws.onmessage = onMessage;
@@ -78,6 +79,14 @@ function handleMessage(type, message){
     var msg = "Switch2,"+message;
     WebSocketSend(msg);
  }
+}
+
+var logBuffer="";
+function messageBox(message){
+    // var messages = document.getElementById("messages");
+    // messages.append(message);
+    logBuffer = logBuffer+"// "+message;
+    document.getElementById("messages").textContent = logBuffer;
 }
 
 console.log("main.js Loaded........");
